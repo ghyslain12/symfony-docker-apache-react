@@ -1,0 +1,11 @@
+/project/vendor/
+/project/resources/crud-react-vite/node_modules/
+/project/resources/crud-react-vite/.idea/
+/project/.env
+/mysql-data/
+.idea/
+/project/run-tests.bat
+/project/resources/crud-react/.vscode
+/project/nbproject
+/project/resources/crud-react-vite/nbproject/
+/config/

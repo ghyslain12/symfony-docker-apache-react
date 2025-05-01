@@ -1,0 +1,82 @@
+version: "3.8"
+services:
+    # Mysql database container
+    db:
+        image: mysql:8.0
+        ports:
+            - "3306:3306"
+        container_name: app_db_symfony_react
+        restart: on-failure
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - db-data:/var/lib/mysql
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        environment:
+            MYSQL_ROOT_PASSWORD: 'gigi'
+            MYSQL_DATABASE: 'app'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+            MYSQL_USER: 'gigi'
+            MYSQL_PASSWORD: 'gigi'
+        networks:
+            - app_symfony_react
+            
+    # phpmyadmin container
+    phpmyadmin:
+        image: phpmyadmin
+        container_name: app_phpmyadmin_symfony_react
+        restart: on-failure
+        depends_on:
+            - db
+        ports:
+            - "8080:80"
+        environment:
+            PMA_HOST: db
+            PMA_USER: root
+            PMA_PASSWORD: gigi
+        networks:
+            - app_symfony_react        
+
+    # server apache container
+    app:
+        build:
+            context: . 
+            dockerfile: docker/Dockerfile  
+        container_name: symfony_app
+        restart: on-failure
+        volumes:
+            - ./docker/vhosts:/etc/apache2/sites-enabled
+            - ./project:/var/www
+        ports:
+            - "8741:80"
+        depends_on:
+            - db
+        networks:
+            - app_symfony_react
+
+    # react container
+    react-app:
+        build:
+            context: ./project/resources/crud-react-vite
+            dockerfile: Dockerfile
+        container_name: react_app
+        restart: on-failure
+        ports:
+            - "4200:4200"
+        volumes:
+            - ./project/resources/crud-react-vite:/app
+            - /app/node_modules 
+        environment:
+            VITE_BASE_URI: http://localhost:4200
+            NODE_ENV: development
+        networks:
+            - app_symfony_react
+        depends_on:
+            - app
+
+                 
+networks:
+  app_symfony_react:
+    driver: bridge 
+
+volumes:
+    db-data:

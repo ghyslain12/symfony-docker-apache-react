@@ -1,0 +1,9 @@
+lexik_jwt_authentication:
+    secret_key: '%env(JWT_SECRET)%'  # Clé secrète définie dans .env
+    token_ttl: 3600                 # Durée de vie du token (1 heure)
+    encoder:
+        signature_algorithm: HS256  # Algorithme HMAC avec SHA-256
+
+    #secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    #public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    #pass_phrase: '%env(JWT_PASSPHRASE)%'
