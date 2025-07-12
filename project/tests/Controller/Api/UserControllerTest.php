@@ -3,7 +3,7 @@
 namespace App\Tests\Controller\Api;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,17 +11,18 @@ use Symfony\Component\HttpFoundation\Response;
 class UserControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
-    private UserRepository $userRepository;
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->userRepository = static::getContainer()->get(UserRepository::class);
         $this->entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
 
         // Nettoyer la table des utilisateurs pour les tests
         $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
+
+        parent::setUp();
+
     }
 
     private function createTestUser(string $email = 'test@example.com', string $password = 'password'): User

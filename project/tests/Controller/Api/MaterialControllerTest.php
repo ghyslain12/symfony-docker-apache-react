@@ -4,8 +4,7 @@ namespace App\Tests\Controller\Api;
 
 use App\Entity\Material;
 use App\Entity\User;
-use App\Repository\MaterialRepository;
-use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,20 +12,18 @@ use Symfony\Component\HttpFoundation\Response;
 class MaterialControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
-    private MaterialRepository $materialRepository;
-    private UserRepository $userRepository;
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->materialRepository = static::getContainer()->get(MaterialRepository::class);
-        $this->userRepository = static::getContainer()->get(UserRepository::class);
         $this->entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
 
         // Nettoyer la table des matériaux pour les tests
         $this->entityManager->createQuery('DELETE FROM App\Entity\Material')->execute();
         $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
+
+        parent::setUp();
     }
 
     private function createTestUser(string $email = 'test@example.com', string $password = 'password'): User

@@ -8,8 +8,8 @@ use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\CustomerRepository;
 use App\Repository\SaleRepository;
-use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,16 +17,14 @@ use Symfony\Component\HttpFoundation\Response;
 class TicketControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
-    private TicketRepository $ticketRepository;
     private UserRepository $userRepository;
     private CustomerRepository $customerRepository;
     private SaleRepository $saleRepository;
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->ticketRepository = static::getContainer()->get(TicketRepository::class);
         $this->userRepository = static::getContainer()->get(UserRepository::class);
         $this->customerRepository = static::getContainer()->get(CustomerRepository::class);
         $this->saleRepository = static::getContainer()->get(SaleRepository::class);
@@ -37,6 +35,9 @@ class TicketControllerTest extends WebTestCase
         $this->entityManager->createQuery('DELETE FROM App\Entity\Sale')->execute();
         $this->entityManager->createQuery('DELETE FROM App\Entity\Customer')->execute();
         $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
+
+        parent::setUp();
+
     }
 
     private function createTestUser(string $email = 'test@example.com', string $password = 'password'): User
